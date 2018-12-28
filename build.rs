@@ -3,26 +3,16 @@ use std::process::Command;
 
 fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
+    let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
 
-    Command::new("ocamlfind")
+    Command::new("make")
         .args(&[
-              "ocamlopt","-output-complete-obj",
-              "-o", &format!("{}/libevm.o", out_dir),
-              "-I", "src/ocaml",
-              "-linkpkg", "-package", "num,ctypes",
-              "src/ocaml/interpreter.ml"
+              "-C",
+              &format!("{}/verified_vm", root_dir),
+              &format!("TARGET_DIR={}", out_dir)
         ])
         .status()
-        .expect("Couldn't run builder clean. Do you have dune?");
-
-    Command::new("ar")
-        .args(&[
-            "qs",
-            &format!("{}/libevm.a", out_dir),
-            &format!("{}/libevm.o", out_dir),
-        ])
-        .status()
-        .expect("ar gave an error");
+        .expect("cannot build verified vm as a library");
 
     println!("cargo:rustc-link-search={}", out_dir);
 }

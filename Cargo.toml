@@ -6,8 +6,3 @@ build = "build.rs"
 
 [dependencies]
 ocaml = "0.5.0"
-
-
-[[bin]]
-name = "levm"
-path = "src/rust/main.rs"
