@@ -12,14 +12,7 @@ let rec interprete (ops_addr: int) (len: int) : int =
     let ops_void_ptr = (ptr_of_raw_address ops_nativeint) in
     let ops_ptr = (from_voidp char ops_void_ptr) in
 
-    let rec sum ptr len =
-        if len = 0 then
-            0
-        else
-            (int_of_char !@ptr) + (sum (ptr +@ 1) (len - 1))
-    in
-
-    sum ops_ptr len
+    Evm.run []
 ;;
 
 let _ = Callback.register "interprete" interprete;;
