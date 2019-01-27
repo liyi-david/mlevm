@@ -13,7 +13,6 @@ default: $(TARGET_DIR)/libevm.a
 $(TARGET_DIR)/libevm.o:
 	ocamlfind \
 		ocamlopt -output-complete-obj \
-		-cc "gcc" \
 		-o $@ \
 		-I $(SOURCE_DIRS) \
 		-linkpkg -package $(PACKAGES) \
@@ -21,6 +20,7 @@ $(TARGET_DIR)/libevm.o:
 
 %.a: %.o
 	ar qs $@ $<
+	rm $<
 
 clean:
 	rm -f $(CURDIR)/*.a
