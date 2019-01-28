@@ -2,21 +2,30 @@ TARGET_DIR	?= $(CURDIR)
 
 OCAMLFIND	?= ocamlfind
 OCAMLOPT	?= ocamlopt
+OCAMLC		?= ocamlc
 
-SOURCE_DIRS	=  $(CURDIR)/src,$(CURDIR)/gen
-SOURCES		=  $(wildcard $(CURDIR)/src/*.ml $(CURDIR)/gen/*.ml)
+INCLUDES	=  $(CURDIR)/src $(CURDIR)/gen
+
+INTERFACES	=  $(wildcard $(CURDIR)/src/*.mli)
+SOURCES		=  $(wildcard $(CURDIR)/src/*.ml) $(CURDIR)/gen/evm.ml
+
+CMIS		=  $(INTERFACES:.mli=.cmi)
 # make sure there is no space befor/after the comma, very important!
 PACKAGES	=  num,ctypes
 
 default: $(TARGET_DIR)/libevm.a
 
-$(TARGET_DIR)/libevm.o:
-	ocamlfind \
-		ocamlopt -output-complete-obj \
+$(TARGET_DIR)/libevm.o: $(CMIS) $(SOURCES)
+	$(OCAMLFIND) \
+		$(OCAMLOPT) -output-complete-obj \
 		-o $@ \
-		-I $(SOURCE_DIRS) \
+		$(addprefix -I , $(INCLUDES)) \
 		-linkpkg -package $(PACKAGES) \
 		$(SOURCES)
+
+$(CURDIR)/gen/evm.ml: $(CURDIR)/gen/evm.v
+	cd $(CURDIR)/gen && coqc $(CURDIR)/gen/evm.v
+	rm $(CURDIR)/gen/evm.mli
 
 %.a: %.o
 	ar qs $@ $<
@@ -25,3 +34,11 @@ $(TARGET_DIR)/libevm.o:
 clean:
 	rm -f $(CURDIR)/*.a
 	rm -f $(CURDIR)/*.o
+	rm -f $(CURDIR)/gen/*.ml
+	rm -f $(CURDIR)/gen/*.mli
+	rm -f $(CURDIR)/gen/*.cmi
+	rm -f $(CURDIR)/gen/*.cmx
+	rm -f $(CURDIR)/gen/*.glob
+	rm -f $(CURDIR)/gen/*.o
+	rm -f $(CURDIR)/gen/*.vo
+	rm -f $(CMIS)
