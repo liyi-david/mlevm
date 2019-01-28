@@ -1,7 +1,6 @@
-mod levm;
+mod interpreter;
 
 fn main() {
-    println!(">>> rust levm test.");
-    levm::initialize();
-    levm::interprete(vec![1, 2, 3, 4]);
+    println!(">>> rust coqvm test.");
+    interpreter::initialize();
 }

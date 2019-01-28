@@ -7,15 +7,15 @@ OCAMLC		?= ocamlc
 INCLUDES	=  $(CURDIR)/src $(CURDIR)/gen
 
 INTERFACES	=  $(wildcard $(CURDIR)/src/*.mli)
-SOURCES		=  $(wildcard $(CURDIR)/src/*.ml) $(CURDIR)/gen/evm.ml
+SOURCES		=  $(CURDIR)/gen/evm.ml $(wildcard $(CURDIR)/src/*.ml)
 
 CMIS		=  $(INTERFACES:.mli=.cmi)
 # make sure there is no space befor/after the comma, very important!
 PACKAGES	=  num,ctypes
 
-default: $(TARGET_DIR)/libevm.a
+default: $(TARGET_DIR)/libcoqvm.a
 
-$(TARGET_DIR)/libevm.o: $(CMIS) $(SOURCES)
+$(TARGET_DIR)/libcoqvm.o: $(CMIS) $(SOURCES)
 	$(OCAMLFIND) \
 		$(OCAMLOPT) -output-complete-obj \
 		-o $@ \

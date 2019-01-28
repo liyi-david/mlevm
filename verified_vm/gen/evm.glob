@@ -1,4 +1,4 @@
-DIGEST deb6adb9fd035bb85515a0c704201187
+DIGEST 5e4a5a782e5f7fcff463ac491558024a
 Fevm
 R8:17 Coq.extraction.Extraction <> <> lib
 R28:42 Coq.extraction.ExtrOcamlNatInt <> <> lib
@@ -15,56 +15,106 @@ R177:187 evm <> return_type ind
 R170:172 Coq.Init.Datatypes <> nat ind
 R205:215 evm <> return_type ind
 R233:243 evm <> return_type ind
-constr 264:270 <> mkState
-rec 255:259 <> state
-proj 278:278 <> s
-proj 295:296 <> pc
-proj 310:312 <> ret
-R284:288 evm <> stack def
-R301:303 Coq.Init.Datatypes <> nat ind
-R316:326 evm <> return_type ind
-ind 343:348 <> opcode
-constr 365:368 <> PUSH
-constr 392:394 <> POP
-R375:378 Coq.Init.Logic <> :type_scope:x_'->'_x not
-R379:384 evm <> opcode ind
-R372:374 Coq.Init.Datatypes <> nat ind
-R399:404 evm <> opcode ind
-def 419:424 <> interp
-R431:436 evm <> opcode ind
-R445:448 Coq.Init.Logic <> :type_scope:x_'->'_x not
-R449:453 evm <> state rec
-R440:444 evm <> state rec
-R478:479 evm <> op var
-R492:495 evm <> PUSH constr
-R502:508 evm <> mkState constr
-R542:544 evm <> ret proj
-R538:539 evm <> st var
-R526:528 Coq.Init.Peano <> :nat_scope:x_'+'_x not
-R533:534 evm <> pc proj
-R529:530 evm <> st var
-R512:515 Coq.Init.Datatypes <> :list_scope:x_'::'_x not
-R520:520 evm <> s proj
-R516:517 evm <> st var
-R553:555 evm <> POP constr
-R573:573 evm <> s proj
-R569:570 evm <> st var
-R599:602 Coq.Init.Datatypes <> cons constr
-R612:618 evm <> mkState constr
-R641:643 evm <> ret proj
-R637:638 evm <> st var
-R625:627 Coq.Init.Peano <> :nat_scope:x_'+'_x not
-R632:633 evm <> pc proj
-R628:629 evm <> st var
-R664:666 Coq.Init.Datatypes <> nil constr
-R671:677 evm <> mkState constr
-R700:706 evm <> Failure constr
-R688:690 Coq.Init.Peano <> :nat_scope:x_'+'_x not
-R695:696 evm <> pc proj
-R691:692 evm <> st var
-R683:683 evm <> s proj
-R679:680 evm <> st var
-def 749:751 <> run
-R759:762 Coq.Init.Datatypes <> list ind
-R764:769 evm <> opcode ind
-R774:776 Coq.Init.Datatypes <> nat ind
+ind 258:263 <> opcode
+constr 280:283 <> PUSH
+constr 310:312 <> POP
+constr 333:339 <> INVALID
+R293:296 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R297:302 evm <> opcode ind
+R290:292 Coq.Init.Datatypes <> nat ind
+R320:325 evm <> opcode ind
+R343:348 evm <> opcode ind
+constr 373:379 <> mkState
+rec 364:368 <> state
+proj 387:387 <> s
+proj 408:414 <> opcodes
+proj 435:436 <> pc
+proj 454:456 <> ret
+R397:401 evm <> stack def
+R418:421 Coq.Init.Datatypes <> list ind
+R423:428 evm <> opcode ind
+R445:447 Coq.Init.Datatypes <> nat ind
+R464:474 evm <> return_type ind
+def 492:501 <> get_opcode
+R519:520 evm <> st var
+R533:539 evm <> mkState constr
+R555:557 Coq.Lists.List <> nth def
+R566:572 evm <> INVALID constr
+def 595:600 <> interp
+R609:612 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R613:617 evm <> state rec
+R604:608 evm <> state rec
+R646:655 evm <> get_opcode def
+R657:658 evm <> st var
+R673:674 evm <> op var
+R687:690 evm <> PUSH constr
+R697:703 evm <> mkState constr
+R750:752 evm <> ret proj
+R746:747 evm <> st var
+R734:736 Coq.Init.Peano <> :nat_scope:x_'+'_x not
+R741:742 evm <> pc proj
+R737:738 evm <> st var
+R723:729 evm <> opcodes proj
+R719:720 evm <> st var
+R707:710 Coq.Init.Datatypes <> :list_scope:x_'::'_x not
+R715:715 evm <> s proj
+R711:712 evm <> st var
+R761:763 evm <> POP constr
+R781:781 evm <> s proj
+R777:778 evm <> st var
+R807:810 Coq.Init.Datatypes <> cons constr
+R820:826 evm <> mkState constr
+R862:864 evm <> ret proj
+R858:859 evm <> st var
+R846:848 Coq.Init.Peano <> :nat_scope:x_'+'_x not
+R853:854 evm <> pc proj
+R849:850 evm <> st var
+R835:841 evm <> opcodes proj
+R831:832 evm <> st var
+R885:887 Coq.Init.Datatypes <> nil constr
+R892:898 evm <> mkState constr
+R934:940 evm <> Failure constr
+R922:924 Coq.Init.Peano <> :nat_scope:x_'+'_x not
+R929:930 evm <> pc proj
+R925:926 evm <> st var
+R911:917 evm <> opcodes proj
+R907:908 evm <> st var
+R904:904 evm <> s proj
+R900:901 evm <> st var
+R968:974 evm <> INVALID constr
+R979:985 evm <> mkState constr
+R1015:1021 evm <> Failure constr
+R1011:1012 evm <> pc proj
+R1007:1008 evm <> st var
+R998:1004 evm <> opcodes proj
+R994:995 evm <> st var
+R991:991 evm <> s proj
+R987:988 evm <> st var
+def 1042:1048 <> iterate
+R1055:1057 Coq.Init.Datatypes <> nat ind
+R1063:1067 evm <> state rec
+R1085:1089 evm <> state rec
+R1104:1106 evm <> gas var
+R1119:1119 Coq.Init.Datatypes <> O constr
+R1124:1124 evm <> s var
+R1132:1132 Coq.Init.Datatypes <> S constr
+R1160:1165 evm <> interp def
+R1167:1167 evm <> s var
+R1190:1192 evm <> ret proj
+R1186:1187 evm <> s' var
+R1210:1213 evm <> None constr
+R1218:1224 evm <> iterate def
+R1231:1232 evm <> s' var
+R1249:1250 evm <> s' var
+def 1285:1287 <> run
+R1295:1298 Coq.Init.Datatypes <> list ind
+R1300:1305 evm <> opcode ind
+R1314:1316 Coq.Init.Datatypes <> nat ind
+R1321:1323 Coq.Init.Datatypes <> nat ind
+R1344:1350 evm <> mkState constr
+R1362:1365 evm <> None constr
+R1356:1358 evm <> ops var
+R1352:1354 Coq.Init.Datatypes <> nil constr
+R1394:1400 evm <> iterate def
+R1406:1409 evm <> init var
+R1402:1404 evm <> gas var
