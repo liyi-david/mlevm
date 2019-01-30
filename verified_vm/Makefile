@@ -29,11 +29,15 @@ $(CURDIR)/gen/evm.ml: $(CURDIR)/gen/evm.v
 
 %.a: %.o
 	ar qs $@ $<
-	rm $<
+	mv $< $<.backup
 
 clean:
 	rm -f $(CURDIR)/*.a
 	rm -f $(CURDIR)/*.o
+	rm -f $(CURDIR)/src/*.o
+	rm -f $(CURDIR)/src/*.mli
+	rm -f $(CURDIR)/src/*.cmi
+	rm -f $(CURDIR)/src/*.cmx
 	rm -f $(CURDIR)/gen/*.ml
 	rm -f $(CURDIR)/gen/*.mli
 	rm -f $(CURDIR)/gen/*.cmi
