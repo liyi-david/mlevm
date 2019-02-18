@@ -37,10 +37,31 @@ let tty_print_opcodes (ops : opcode list) =
         | ADDMOD        -> sprintf "ADDMOD"
         | MULMOD        -> sprintf "MULMOD"
         | EXP           -> sprintf "EXP"
+        | SIGNEXTEND    -> sprintf "SIGNEXTEND"
+        | LT            -> sprintf "LT"
+        | GT            -> sprintf "GT"
+        | SLT           -> sprintf "SLT"
+        | SGT           -> sprintf "SGT"
+        | EQ            -> sprintf "EQ"
+        | ISZERO        -> sprintf "ISZERO"
+        | CALLVALUE     -> sprintf "CALLVALUE"
+        | CALLDATALOAD  -> sprintf "CALLDATALOAD"
+        | MLOAD         -> sprintf "MLOAD"
         | MSTORE        -> sprintf "MSTORE"
         | MSTORE8       -> sprintf "MSTORE8"
+        | SLOAD         -> sprintf "SLOAD"
+        | SSTORE        -> sprintf "SSTORE"
+        | JUMP          -> sprintf "JUMP"
+        | JUMPI         -> sprintf "JUMPI"
+        | PC            -> sprintf "PC"
+        | MSIZE         -> sprintf "MSIZE"
+        | GAS           -> sprintf "GAS"
+        | JUMPDEST      -> sprintf "JUMPDEST"
+        | RETURN        -> sprintf "RETURN"
         | POP           -> sprintf "POP"
         | PUSH a        -> sprintf "PUSH %d" a
+        | DUP a         -> sprintf "DUP %d" a
+        | SWAP a        -> sprintf "SWAP %d" a
         | INVALID c     -> sprintf "INVALID %2X" c
         | _             -> "UNHANDLED"
         in

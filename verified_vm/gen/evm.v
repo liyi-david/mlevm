@@ -37,22 +37,43 @@ Inductive vm_status : Set :=
 .
 
 Inductive opcode : Set :=
-    | STOP      : opcode
-    | ADD       : opcode
-    | MUL       : opcode
-    | SUB       : opcode
-    | DIV       : opcode
-    | SDIV      : opcode
-    | MOD       : opcode
-    | SMOD      : opcode
-    | ADDMOD    : opcode
-    | MULMOD    : opcode
-    | EXP       : opcode
-    | MSTORE    : opcode
-    | MSTORE8   : opcode
-    | PUSH      : nat -> opcode
-    | POP       : opcode
-    | INVALID   : nat -> opcode
+    | STOP          : opcode
+    | ADD           : opcode
+    | MUL           : opcode
+    | SUB           : opcode
+    | DIV           : opcode
+    | SDIV          : opcode
+    | MOD           : opcode
+    | SMOD          : opcode
+    | ADDMOD        : opcode
+    | MULMOD        : opcode
+    | EXP           : opcode
+    | SIGNEXTEND    : opcode
+    | LT            : opcode
+    | GT            : opcode
+    | SLT           : opcode
+    | SGT           : opcode
+    | EQ            : opcode
+    | ISZERO        : opcode
+    | CALLVALUE     : opcode
+    | CALLDATALOAD  : opcode
+    | MLOAD         : opcode
+    | MSTORE        : opcode
+    | MSTORE8       : opcode
+    | SLOAD         : opcode
+    | SSTORE        : opcode
+    | JUMP          : opcode
+    | JUMPI         : opcode
+    | PC            : opcode
+    | MSIZE         : opcode
+    | GAS           : opcode
+    | JUMPDEST      : opcode
+    | RETURN        : opcode
+    | POP           : opcode
+    | PUSH          : nat -> opcode
+    | DUP           : nat -> opcode
+    | SWAP          : nat -> opcode
+    | INVALID       : nat -> opcode
     (* TODO lots of things *)
     .
 
