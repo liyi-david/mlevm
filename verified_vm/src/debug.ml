@@ -27,11 +27,23 @@ let tty_print_opcodes (ops : opcode list) =
     iter begin fun op ->
         let str_op = match op with
         | STOP          -> "STOP"
+        | ADD           -> sprintf "ADD"
+        | MUL           -> sprintf "MUL"
+        | SUB           -> sprintf "SUB"
+        | DIV           -> sprintf "DIV"
+        | SDIV          -> sprintf "SDIV"
+        | MOD           -> sprintf "MOD"
+        | SMOD          -> sprintf "SMOD"
+        | ADDMOD        -> sprintf "ADDMOD"
+        | MULMOD        -> sprintf "MULMOD"
+        | EXP           -> sprintf "EXP"
+        | MSTORE        -> sprintf "MSTORE"
+        | MSTORE8       -> sprintf "MSTORE8"
         | POP           -> sprintf "POP"
         | PUSH a        -> sprintf "PUSH %d" a
         | INVALID c     -> sprintf "INVALID %2X" c
         | _             -> "UNHANDLED"
         in
-        tty_println str_op
+        tty_print str_op; tty_print "\t"
     end ops
 ;;

@@ -23,8 +23,8 @@ $(TARGET_DIR)/libcoqvm.o: $(CMIS) $(SOURCES)
 		-linkpkg -package $(PACKAGES) \
 		$(SOURCES)
 
-$(CURDIR)/gen/evm.ml: $(CURDIR)/gen/evm.v
-	cd $(CURDIR)/gen && coqc $(CURDIR)/gen/evm.v
+$(CURDIR)/gen/evm.ml: $(CURDIR)/gen/evm.v $(CURDIR)/gen/rules.v
+	cd $(CURDIR)/gen && coqc $(CURDIR)/gen/evm.v -Q $(CURDIR)/gen Local
 	rm $(CURDIR)/gen/evm.mli
 
 %.a: %.o
