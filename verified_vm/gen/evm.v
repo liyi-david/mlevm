@@ -1,11 +1,15 @@
 Require Extraction.
-Require ExtrOcamlNatInt.
 
 Require Import List.
 Require Import Arith.
+Require Import Nat.
 
 Open Scope type_scope.
 Open Scope list_scope.
+Open Scope nat_scope.
+
+
+(* STACK *)
 
 Definition push {T:Type} (s: list T) a := a :: s.
 
@@ -14,6 +18,12 @@ Definition pop {T:Type} (s: list T) : list T * option T :=
     | a :: s' => (s', Some a)
     | _ => (s, None)
     end.
+
+Variable swap : forall {T:Type}, list T -> nat -> option (list T).
+
+(* generate code *)
+Local Load rules.
+
 
 Inductive error : Set :=
     | OutOfBounds
@@ -24,9 +34,25 @@ Inductive error : Set :=
     | InvalidOpcode
 .
 
+(* MEMORY *)
+Inductive memory_value : Set :=
+    | Item8 : u256 -> memory_value
+    | Item256 : u256 -> memory_value
+.
+
+Definition memory : Type := u256 -> option memory_value.
+
+Definition empty_mem : memory := fun _ => None.
+
+Definition update_mem_val (m:memory) (index:u256) (val:option memory_value) : memory :=
+    fun i => match (u256_eqb i index) with 
+    | true => val
+    | false => (m i)
+    end.
+
 Inductive return_type : Set :=
-    | Normal : nat -> return_type
-    | Create : nat -> return_type
+    | Normal : u256 -> return_type
+    | Create : u256 -> return_type
     | Revert : return_type
 .
 
@@ -70,7 +96,7 @@ Inductive opcode : Set :=
     | JUMPDEST      : opcode
     | RETURN        : opcode
     | POP           : opcode
-    | PUSH          : nat -> opcode
+    | PUSH          : u256 -> opcode
     | DUP           : nat -> opcode
     | SWAP          : nat -> opcode
     | INVALID       : nat -> opcode
@@ -88,15 +114,24 @@ Definition gas_of op : nat :=
 .
 
 Record state := mkState {
-    stack   : list nat;
+    stack   : list u256;
+    mem     : memory;
     opcodes : list opcode;
+    jumpmap : u256 -> nat;    
     pc      : nat;
     status  : vm_status;
 }.
 
+Definition update_stack  s st := mkState st s.(mem) s.(opcodes) s.(jumpmap) s.(pc) s.(status).
+Definition update_mem    s m  := mkState s.(stack) m s.(opcodes) s.(jumpmap) s.(pc) s.(status).
+Definition update_pc     s i  := mkState s.(stack) s.(mem) s.(opcodes) s.(jumpmap) (s.(pc) + i) s.(status).
+Definition update_status s st := mkState s.(stack) s.(mem) s.(opcodes) s.(jumpmap) s.(pc) st.
+
+Definition inc_pc        s    := update_pc s 1.
+
 Definition get_opcode st :=
     match st with
-    | mkState _ ops pc _ => nth pc ops (INVALID 0)
+    | mkState _ _ ops _ pc _ => nth pc ops (INVALID O)
     end.
 
 (* avoid ambiguration on operators *)
@@ -105,56 +140,143 @@ Close Scope type_scope.
 Definition interp : state -> state := fun st =>
     let op := get_opcode st in
     match op with
-    | STOP          => mkState st.(stack) st.(opcodes) st.(pc) (Finish (Normal 0))
+    | STOP          => update_status st (Finish (Normal (u256_of_nat 0)))
     | ADD           => let (s', a)  := (pop st.(stack)) in
                        let (s'', b) := (pop s') in
+                       inc_pc
                        match a, b with
-                       | Some a', Some b' => mkState (push s'' (a' + b')) st.(opcodes) (1 + st.(pc)) st.(status)
-                       | _, _ => mkState s'' st.(opcodes) (1 + st.(pc)) (Error OutOfStack)
+                       | Some a', Some b' => update_stack st (push s'' (u256_add a' b'))
+                       | _, _ => update_status st (Error OutOfStack)
                        end
     | MUL           => let (s', a)  := (pop st.(stack)) in
                        let (s'', b) := (pop s') in
+                       inc_pc
                        match a, b with
-                       | Some a', Some b' => mkState (push s'' (a' * b')) st.(opcodes) (1 + st.(pc)) st.(status)
-                       | _, _ => mkState s'' st.(opcodes) (1 + st.(pc)) (Error OutOfStack)
+                       | Some a', Some b' => update_stack st (push s'' (u256_mul a' b'))
+                       | _, _ => update_status st (Error OutOfStack)
                        end
     | SUB           => let (s', a)  := (pop st.(stack)) in
                        let (s'', b) := (pop s') in
+                       inc_pc
                        match a, b with
-                       | Some a', Some b' => mkState (push s'' (a' * b')) st.(opcodes) (1 + st.(pc)) st.(status)
-                       | _, _ => mkState s'' st.(opcodes) (1 + st.(pc)) (Error OutOfStack)
+                       | Some a', Some b' => update_stack st (push s'' (u256_sub a' b'))
+                       | _, _ => update_status st (Error OutOfStack)
                        end
     | DIV           => let (s', a)  := (pop st.(stack)) in
                        let (s'', b) := (pop s') in
+                       inc_pc
                        match a, b with
-                       | Some a', Some b' => mkState (push s'' (a' / b')) st.(opcodes) (1 + st.(pc)) st.(status)
-                       | _, _ => mkState s'' st.(opcodes) (1 + st.(pc)) (Error OutOfStack)
+                       | Some a', Some b' => update_stack st (push s'' (u256_div a' b'))
+                       | _, _ => update_status st (Error OutOfStack)
                        end
-    | PUSH a        => mkState (push st.(stack) a) st.(opcodes) (1 + st.(pc)) st.(status)
-    | POP           => let (s', a) := (pop st.(stack)) in
-                       match a with
-                       | Some _  => mkState s' st.(opcodes) (1 + st.(pc)) st.(status)
-                       | None    => mkState s' st.(opcodes) (1 + st.(pc)) (Error OutOfStack)
-                       end
-    | INVALID _     => mkState st.(stack) st.(opcodes) st.(pc) (Error InvalidOpcode)
-    | _             => mkState st.(stack) st.(opcodes) st.(pc) (Error InvalidOpcode)
+    | EXP           =>  let (s', a)   := (pop st.(stack)) in
+                        let (s'', b) := (pop s') in
+                        inc_pc
+                        match a, b with
+                        | Some a', Some b' => (update_stack st (push s'' (u256_pow a' b')))
+                        | _, _ => update_status st (Error OutOfStack)
+                        end
+    | EQ            =>  let (s', a)  := (pop st.(stack)) in
+                        let (s'', b) := (pop s') in
+                        inc_pc
+                        match a, b with
+                        | Some a', Some b' => update_stack st (push s'' (if u256_eqb a' b' then (u256_of_nat 1) else (u256_of_nat 0)))
+                        | _, _ => update_status st (Error OutOfStack)
+                        end
+    | ISZERO        =>  let (s', _a) := (pop st.(stack)) in
+                        inc_pc
+                        match _a with
+                        | Some a  => update_stack st (push s' (if (u256_eqb a (u256_of_nat 0)) then (u256_of_nat 1) else (u256_of_nat 0)))
+                        | None    => update_status st (Error OutOfStack)
+                        end
+                        (* FIXME *)
+    | LT            =>  let (s', a)  := (pop st.(stack)) in
+                        let (s'', b) := (pop s') in
+                        inc_pc
+                        match a, b with
+                        | Some a', Some b' => update_stack st (push s'' (if u256_lt a' b' then (u256_of_nat 1) else (u256_of_nat 0)))
+                        | _, _ => update_status st (Error OutOfStack)
+                        end
+    | CALLVALUE     =>  inc_pc (update_stack st (push st.(stack) u2560))
+    | CALLDATALOAD  =>  let (s', _offset) := (pop st.(stack)) in
+                        inc_pc
+                        match _offset with
+                            (* FIXME *)
+                        | Some offset   => update_stack st (push s' (u256_of_nat 1))
+                        | None          => update_status st (Error OutOfStack)
+                        end
+    | POP           =>  let (s', a) := (pop st.(stack)) in
+                        inc_pc
+                        match a with
+                        | Some _  => update_stack st s'
+                        | None    => update_status st (Error OutOfStack)
+                        end
+    | JUMP          =>  let (s', _dest) := (pop st.(stack)) in
+                        match _dest with
+                        | Some dest => update_pc (update_stack st s') (st.(jumpmap) dest)
+                        | None      => inc_pc (update_stack st s')
+                        end
+    | JUMPI         =>  let (s', _dest) := (pop st.(stack)) in
+                        let (s'', _cond) := (pop s') in
+                        match _dest, _cond with
+                        | Some dest, Some cond =>
+                            if (u256_eqb cond u2560) then
+                                inc_pc (update_stack st s'')
+                            else
+                                update_status st (Error InvalidOpcode)
+                        | _, _ => update_status st (Error OutOfStack)
+                        end
+    | JUMPDEST      =>  inc_pc st
+    | PUSH a        =>  inc_pc (update_stack st (push st.(stack) a))
+    | DUP i         =>  let _a := (nth_error st.(stack) (i - 1)) in
+                        inc_pc
+                        match _a with
+                        | Some a  => update_stack st (push st.(stack) a)
+                        | None    => update_status st (Error OutOfStack)
+                        end
+    | SWAP i        =>  let _s := swap st.(stack) i in
+                        inc_pc
+                        match _s with
+                        | Some s => update_stack st s
+                        | None => update_status st (Error OutOfStack)
+                        end
+    | MSTORE        =>  let (s', _offset) := (pop st.(stack)) in
+                        let (s'', _val) := (pop s') in
+                        inc_pc
+                        match _offset, _val with
+                        | Some offset, Some val =>
+                            let m' := update_mem_val st.(mem) offset (Some (Item256 val)) in 
+                            update_mem (update_stack st s'') m'
+                        | _, _ => update_status st (Error OutOfStack)
+                        end
+    | MSTORE8       =>  let (s', _offset) := (pop st.(stack)) in
+                        let (s'', _val) := (pop s') in
+                        inc_pc
+                        match _offset, _val with
+                        | Some offset, Some val =>
+                            let m' := update_mem_val st.(mem) offset (Some (Item8 val)) in 
+                            update_mem (update_stack st s'') m'
+                        | _, _ => update_status st (Error OutOfStack)
+                        end
+    | _                 => update_status st (Error InvalidOpcode)
     end.
 
-Fixpoint iterate (gas:nat) (s:state) {struct gas} : state :=
+Fixpoint iterate (gas:nat) (_s:state) (hook:state -> state) {struct gas} : state :=
+    let s := hook _s in
     let op := get_opcode s in
     match gas with
-    | O => s
+    | O => update_status s (Error OutOfGas)
     | S gas =>
         let s' := interp s in
         match s'.(status) with
-        | Running => iterate (gas - (gas_of op)) s'
+        | Running => iterate (gas - (gas_of op)) s' hook
         | _ => s'
         end
     end.
 
-Definition run (ops: list opcode) (gas: nat) : vm_status :=
-    let init := mkState nil ops 0 Running in
-    let result_state := iterate gas init in
+Definition run (ops: list opcode) (gas: nat) (jmap: u256 -> nat) (hook: state -> state): vm_status :=
+    let init := mkState nil empty_mem ops jmap 0 Running in
+    let result_state := iterate gas init hook in
     result_state.(status).
 
 (* from here we start working on the theorems *)
@@ -181,8 +303,5 @@ Theorem trivial_opt_push_pop:
 Proof.
 Admitted.
 
-
-(* generate code *)
-Local Load rules.
 
 Extraction "evm.ml" run.

@@ -26,6 +26,9 @@ $(TARGET_DIR)/libcoqvm.o: $(CMIS) $(SOURCES)
 $(CURDIR)/gen/evm.ml: $(CURDIR)/gen/evm.v $(CURDIR)/gen/rules.v
 	cd $(CURDIR)/gen && coqc $(CURDIR)/gen/evm.v -Q $(CURDIR)/gen Local
 	rm $(CURDIR)/gen/evm.mli
+	echo "open Big_int;;\n\n" > $(CURDIR)/gen/evm.temp
+	cat $(CURDIR)/gen/evm.ml >> $(CURDIR)/gen/evm.temp
+	mv $(CURDIR)/gen/evm.temp $(CURDIR)/gen/evm.ml
 
 %.a: %.o
 	ar qs $@ $<
