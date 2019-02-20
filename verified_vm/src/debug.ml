@@ -73,7 +73,11 @@ let tty_print_opcodes (ops : opcode list) =
 ;;
 
 let tty_print_stack (s: big_int list) =
+<<<<<<< HEAD
     for i = 0 to (min 8 (List.length s)) - 1 do
+=======
+    for i = 0 to (min 5 (List.length s)) - 1 do
+>>>>>>> 5e91c5dbb29c35c46e5b54d8b766dd011eb6ccf5
         tty_print " | ";
         tty_print (string_of_big_int (List.nth s i));
     done;
@@ -81,11 +85,18 @@ let tty_print_stack (s: big_int list) =
 ;;
 
 let tty_print_state (s: Evm.state) =
+<<<<<<< HEAD
     tty_println "STATE: ";
     tty_print "> stack : ";
     tty_print_stack s.stack;
     tty_print "> next  :  ";
     tty_print ("(" ^ (string_of_int s.pc) ^ ") ");
+=======
+    tty_print "STATE: ";
+    tty_print "> stack: ";
+    tty_print_stack s.stack;
+    tty_print "> next: ";
+>>>>>>> 5e91c5dbb29c35c46e5b54d8b766dd011eb6ccf5
     tty_println (pp_opcode (List.nth s.opcodes s.pc));
 
     s

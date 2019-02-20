@@ -33,10 +33,18 @@ let preprocess (raw_ops: char ptr) (len: int): Evm.opcode list * (int JumpMap.t)
 
     let rec preprocess (raw_ops: char ptr) (len: int) (depth: int) : Evm.opcode list =
         (* TODO what happens if preprocessing failed? *)
+<<<<<<< HEAD
+=======
+        (*
+>>>>>>> 5e91c5dbb29c35c46e5b54d8b766dd011eb6ccf5
         tty_print "map from ";
         tty_print (string_of_int (full_len - len));
         tty_print " to ";
         tty_println (string_of_int depth);
+<<<<<<< HEAD
+=======
+        *)
+>>>>>>> 5e91c5dbb29c35c46e5b54d8b766dd011eb6ccf5
         jmap := JumpMap.add (big_int_of_int (full_len - len)) depth !jmap; 
         if len == 0 then [] else begin
             let curr = int_of_char (!@ raw_ops) in
@@ -164,7 +172,11 @@ let interprete (ops_addr: int) (len: int) : int =
     tty_print "\n";
 
     let jump index = JumpMap.find index jmap in
+<<<<<<< HEAD
     let result = Evm.run ops 90000000 jump tty_print_state in
+=======
+    let result = Evm.run ops 10000 jump tty_print_state in
+>>>>>>> 5e91c5dbb29c35c46e5b54d8b766dd011eb6ccf5
     tty_print "\n";
     let _ = match result with
     | Evm.Running -> tty_println "RUNNING"
